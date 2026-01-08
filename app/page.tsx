@@ -210,7 +210,11 @@ function computeDashboard(rows: any[], opts: {
     dailyNormY.push(v + fixedPerDay)
   }
 
-  const topServices = Array.from(serviceSpend.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10)
+  // Filter out Savings Plans related services
+  const topServices = Array.from(serviceSpend.entries())
+    .filter(([name]) => !name.toLowerCase().includes('savings plan'))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
   const topSvcNames = topServices.map(x => x[0])
   const topSvcCosts = topServices.map(x => x[1])
 
@@ -485,24 +489,42 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="card wide">
+            <div className="card wide" style={{ display: 'flex', justifyContent: 'center' }}>
               {result && (
-                <Plot
-                  data={[{
-                    x: result.topSvcCosts,
-                    y: result.topSvcNames,
-                    type: 'bar',
-                    orientation: 'h',
-                    name: 'Net cost'
-                  }]}
-                  layout={{
-                    title: 'Top 10 services by Net cost',
-                    height: 420,
-                    margin: { l: 220, r: 20, t: 55, b: 45 },
-                    template: 'plotly_white'
-                  }}
-                  config={{ displayModeBar: false }}
-                />
+                <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
+                  <Plot
+                    data={[{
+                      x: result.topSvcCosts,
+                      y: result.topSvcNames,
+                      type: 'bar',
+                      orientation: 'h',
+                      name: 'Net cost',
+                      marker: { color: '#1d4ed8' }
+                    }]}
+                    layout={{
+                      title: {
+                        text: 'Top 10 services by Net cost',
+                        x: 0.5,
+                        xanchor: 'center'
+                      },
+                      height: 420,
+                      margin: { l: 250, r: 50, t: 55, b: 45 },
+                      template: 'plotly_white',
+                      xaxis: {
+                        title: 'Net Cost (€)',
+                        showgrid: true
+                      },
+                      yaxis: {
+                        title: '',
+                        showgrid: false,
+                        automargin: true
+                      },
+                      showlegend: false
+                    }}
+                    config={{ displayModeBar: false }}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </div>
               )}
             </div>
 
